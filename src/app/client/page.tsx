@@ -30,7 +30,7 @@ export default function Client() {
           <div className="h-screen w-1/3 bg-black">
             <CreateClientForm />
           </div>
-          <div className="h-screen w-2/3 bg-black">
+          <div className="h-screen w-2/3">
             <ListClients />
           </div>
         </div>

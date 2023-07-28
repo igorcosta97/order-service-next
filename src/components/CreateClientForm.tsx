@@ -1,23 +1,54 @@
 'use client'
 import React, { FormEvent, useState } from 'react'
 import * as Form from '@radix-ui/react-form'
-import { KeyRound, UserCircle2 } from 'lucide-react'
 import { api } from '@/lib/api'
+import { getCookie } from '@/utils/getCookie'
 
 export default function CreateClientForm() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [notToken, setNotToken] = useState(false)
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [city, setCity] = useState('')
+  const [uf, setUf] = useState('')
+  const [address, setAddress] = useState('')
+  const [district, setDistric] = useState('')
+  const [cep, setCep] = useState('')
+  const [phone, setPhone] = useState('')
 
   async function authForm(event: FormEvent) {
     event.preventDefault()
-    /*
-    const responseAuth = await api.post('/auth', {
-      username,
-      password,
-    })
-    const { token } = responseAuth.data
-    */
+
+    const token = await getCookie()
+    const phoneNumber = phone.toString()
+    const responseCreateClient = await api.post(
+      '/client',
+      {
+        name,
+        email,
+        city,
+        uf,
+        address,
+        district,
+        phoneNumber,
+        cep,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    const { id } = responseCreateClient.data
+    if (id) {
+      setName('')
+      setEmail('')
+      setAddress('')
+      setPhone('')
+      setCep('')
+      setCity('')
+      setUf('')
+      setDistric('')
+    }
   }
 
   return (
@@ -52,7 +83,8 @@ export default function CreateClientForm() {
         <Form.Control asChild>
           <input
             className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
-            onChange={(event) => setUsername(event.target.value)}
+            onChange={(event) => setName(event.target.value)}
+            value={name}
             required
           />
         </Form.Control>
@@ -82,16 +114,11 @@ export default function CreateClientForm() {
           <input
             className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
             type="email"
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
+            value={email}
             required
           />
         </Form.Control>
-        {notToken && (
-          <Form.Message className="py-2 text-[13px] text-white opacity-[0.8]">
-            O usuário ou senha informados não correspondem a um usuário
-            cadastrado!
-          </Form.Message>
-        )}
       </Form.Field>
       <div className="flex w-full flex-row">
         <Form.Field className="mb-[10px] flex" name="cidade">
@@ -117,12 +144,12 @@ export default function CreateClientForm() {
               className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
               id="Cidade"
               name="Cidade"
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => setCity(event.target.value)}
               required
             >
               <option value="">Selecione</option>
-              <option value="">Belo Horizonte</option>
-              <option value="">Sabará</option>
+              <option value="Belo Horizonte">Belo Horizonte</option>
+              <option value="Sabará">Sabará</option>
             </select>
           </Form.Control>
         </Form.Field>
@@ -152,11 +179,11 @@ export default function CreateClientForm() {
               className="selection:color-white box-border inline-flex h-[35px] w-[40px] appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
               id="UF"
               name="UF"
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => setUf(event.target.value)}
               required
             >
-              <option value="">-</option>
-              <option value="">MG</option>
+              <option value=""></option>
+              <option value="Minas Gerais">MG</option>
             </select>
           </Form.Control>
         </Form.Field>
@@ -179,7 +206,8 @@ export default function CreateClientForm() {
         <Form.Control asChild>
           <input
             className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setAddress(event.target.value)}
+            value={address}
             required
             type="text"
           />
@@ -209,7 +237,8 @@ export default function CreateClientForm() {
         <Form.Control asChild>
           <input
             className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setDistric(event.target.value)}
+            value={district}
             type="text"
             required
           />
@@ -240,7 +269,8 @@ export default function CreateClientForm() {
           <input
             className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
             type="text"
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setCep(event.target.value)}
+            value={cep}
             required
           />
         </Form.Control>
@@ -269,7 +299,8 @@ export default function CreateClientForm() {
         <Form.Control asChild>
           <input
             className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-slate-50 px-[10px] text-[15px] leading-none text-black shadow-[0_0_0_1px]  selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setPhone(event.target.value)}
+            value={phone}
             type="text"
             required
           />
